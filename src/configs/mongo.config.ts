@@ -11,15 +11,6 @@ export const getMongoConfig = async (
 };
 
 const getMongoString = (configService: ConfigService) =>
-	'mongodb://' +
-	configService.get('MONGO_LOGIN') +
-	':' +
-	configService.get('MONGO_PASSWORD') +
-	'@' +
-	configService.get('MONGO_HOST') +
-	':' +
-	configService.get('MONGO_PORT') +
-	'/' +
-	configService.get('MONGO_AUTHDATABASE');
+	`mongodb://${encodeURIComponent(configService.get('MONGO_LOGIN'))}:${encodeURIComponent(configService.get('MONGO_PASSWORD'))}@${configService.get('MONGO_HOST')}:${configService.get('MONGO_PORT')}/${configService.get('MONGO_AUTHDATABASE')}?authSource=admin&directConnection=true`;
 
 const getMongoOptions = () => ({});
