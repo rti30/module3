@@ -51,8 +51,4 @@ export class RecordService {
 		const duration = endTime.getTime() - time;
 		return await this.recordModel.updateOne({ _id }, { endTime, duration });
 	}
-
-	remove(id: number) {
-		return this.recordModel.findByIdAndDelete(id).exec();
-	}
 }

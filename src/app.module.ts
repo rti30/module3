@@ -9,7 +9,6 @@ import * as path from 'path';
 	imports: [
 		ConfigModule.forRoot({
 			envFilePath: [
-				path.resolve(process.cwd(), '.env.local'),
 				path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}`),
 				path.resolve(process.cwd(), '.env'),
 			].filter(Boolean),
