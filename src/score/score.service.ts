@@ -32,7 +32,8 @@ export class ScoreService {
 	}
 
 	findAll() {
-		return this.scoreModel.find({ duration: { $exists: true, $ne: null } }).exec();
+		//	return this.scoreModel.find({ duration: { $exists: true, $ne: null } }).exec();
+		return this.scoreModel.find().exec();
 	}
 
 	findOne(id: string) {
