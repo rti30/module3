@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type ScoreDocument = HydratedDocument<ScoreModel>;
+export type RecordDocument = HydratedDocument<RecordModel>;
 
 @Schema({ timestamps: true })
-export class ScoreModel {
+export class RecordModel {
 	@Prop()
 	username: string;
 
@@ -17,9 +17,9 @@ export class ScoreModel {
 	@Prop()
 	duration: number | null;
 }
-export const ScoreSchema = SchemaFactory.createForClass(ScoreModel);
+export const RecordSchema = SchemaFactory.createForClass(RecordModel);
 
-ScoreSchema.pre<ScoreDocument>('save', function (next) {
+RecordSchema.pre<RecordDocument>('save', function (next) {
 	if (!this.username) {
 		this.username = `User_${this._id.toString().substring(10)}`;
 	}

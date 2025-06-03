@@ -1,8 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateScoreDto } from './create-score.dto';
+import { CreateRecordDto } from './create-record.dto';
 import { IsString } from 'class-validator';
 
-export class UpdateScoreDto extends PartialType(CreateScoreDto) {
+export class UpdateRecordDto extends PartialType(CreateRecordDto) {
 	@IsString()
 	startTime: Date;
 }
