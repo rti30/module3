@@ -12,15 +12,10 @@ export class RecordModel {
 	_id?: Types.ObjectId;
 	createdAt?: Date;
 	updatedAt?: Date;
-
 	@Prop({ unique: true })
 	username: string;
-
 	@Prop()
-	endTime: Date | null;
-
-	@Prop()
-	duration: number | null;
+	time: number | null;
 }
 export const RecordSchema = SchemaFactory.createForClass(RecordModel);
 

@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { RecordDocument, RecordModel } from './model/record.model';
 import { MongoUtils } from 'src/common/utils/mongo.utils';
+import { IRecordRequestStart, IResponseScore } from './record.interface';
 
 @Injectable()
 export class RecordService {
@@ -12,34 +13,49 @@ export class RecordService {
 		@InjectModel(RECORD_COLLECTION_NAME) private readonly recordModel: Model<RecordDocument>,
 	) {}
 
-	async create(createRecordDto: CreateRecordDto): Promise<RecordModel> {
+	async create(createRecordDto: CreateRecordDto): Promise<IRecordRequestStart> {
 		const { id } = createRecordDto; // хотя id опциональный, почему-то определяется как string
 		const newUserDto: RecordModel = {
 			username: null,
-			endTime: null,
-			duration: null,
+			time: null,
 		};
 		switch (true) {
 			case !!id: {
 				await MongoUtils.validateId(id, this.recordModel);
 				const _id = mongoose.Types.ObjectId.createFromHexString(id);
-				return await this.updateStartTime(_id);
+
+				const { username, time, createdAt, updatedAt } = await this.updateStartTime(_id);
+				return {
+					username,
+					time,
+					_id: id,
+					createdAt: createdAt.toDateString(),
+					updatedAt: updatedAt.toDateString(),
+				};
 			}
 			default:
-				return await this.recordModel.create(newUserDto);
+				const { _id, username, time, createdAt, updatedAt } =
+					await this.recordModel.create(newUserDto);
+				return {
+					username,
+					time,
+					_id: _id.toHexString(),
+					createdAt: createdAt.toDateString(),
+					updatedAt: updatedAt.toDateString(),
+				};
 		}
 	}
 
 	async findAll(): Promise<RecordModel[]> {
-		return await this.recordModel.find({ duration: { $exists: true, $ne: null } }).exec();
-		//return this.recordModel.find().exec();
+		return await this.recordModel.find({ time: { $exists: true, $ne: null } }).exec();
+		//	return this.recordModel.find().exec();
 	}
 
 	async findOne(id: Types.ObjectId): Promise<RecordModel | null> {
 		return await this.recordModel.findById(id);
 	}
 
-	async update(_id: string): Promise<RecordModel> {
+	async update(_id: string): Promise<IResponseScore> {
 		const endTime = new Date().getTime();
 		await MongoUtils.validateId(_id, this.recordModel);
 		const id = mongoose.Types.ObjectId.createFromHexString(_id);
@@ -48,13 +64,24 @@ export class RecordService {
 		if (!record) {
 			throw new BadRequestException(BAD_REQUEST);
 		}
+		const oldRecord = record.time;
+
 		const startTime = record.updatedAt.getTime();
-		const duration = endTime - startTime;
-		return await this.recordModel.findOneAndUpdate(
-			{ _id: id },
-			{ endTime, duration },
-			{ new: true },
-		);
+		const time = endTime - startTime;
+		const isNewRecord = oldRecord === null || time < oldRecord;
+		let res = record;
+		if (isNewRecord) {
+			res = await this.recordModel.findOneAndUpdate({ _id: id }, { time: time }, { new: true });
+		}
+		const { username, time: newTime, createdAt, updatedAt } = res;
+		return {
+			username,
+			time: isNewRecord ? newTime : time,
+			_id,
+			createdAt: createdAt.toDateString(),
+			updatedAt: updatedAt.toDateString(),
+			isRecord: isNewRecord,
+		};
 	}
 	async updateStartTime(_id: Types.ObjectId): Promise<RecordModel> {
 		return await this.recordModel.findOneAndUpdate(
