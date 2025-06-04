@@ -4,10 +4,19 @@ import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
 	const configService = new ConfigService();
+	const allowedOrigins = configService.get('ALLOWED_ORIGINS').split(',');
 	const app = await NestFactory.create(AppModule);
 	app.setGlobalPrefix('api/v1');
 	app.enableCors({
-		origin: configService.get('ALLOW_HOST'),
+		origin: (origin, callback) => {
+			if (!origin) {
+				return callback(null, true);
+			}
+			if (allowedOrigins.includes(origin)) {
+				return callback(null, true);
+			}
+			return callback(new Error('Ошибка CORS'), false);
+		},
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		credentials: true,
 	});
