@@ -1,15 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type RecordDocument = HydratedDocument<RecordModel>;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class RecordModel {
-	@Prop()
-	username: string;
+	@Prop({
+		type: Types.ObjectId,
+		default: () => new Types.ObjectId(),
+	})
+	_id?: Types.ObjectId;
+	createdAt?: Date;
+	updatedAt?: Date;
 
-	@Prop()
-	startTime: Date;
+	@Prop({ unique: true })
+	username: string;
 
 	@Prop()
 	endTime: Date | null;
@@ -21,7 +26,7 @@ export const RecordSchema = SchemaFactory.createForClass(RecordModel);
 
 RecordSchema.pre<RecordDocument>('save', function (next) {
 	if (!this.username) {
-		this.username = `User_${this._id.toString().substring(10)}`;
+		this.username = `User_${this._id?.toString()?.substring(10) || Date.now()}`;
 	}
 	next();
 });

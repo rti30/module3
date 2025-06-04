@@ -1,6 +1,7 @@
-import { IsString } from 'class-validator';
+import { IsMongoId, IsOptional } from 'class-validator';
 
 export class CreateRecordDto {
-	@IsString()
-	username: string;
+	@IsMongoId({ message: 'Неверный ID' })
+	@IsOptional()
+	id?: string;
 }

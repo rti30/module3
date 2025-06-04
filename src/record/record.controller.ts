@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { RecordService } from './record.service';
 import { CreateRecordDto } from './dto/create-record.dto';
-import { UpdateRecordDto } from './dto/update-record.dto';
 
 @Controller('record')
 export class RecordController {
@@ -29,7 +28,7 @@ export class RecordController {
 
 	@UsePipes(new ValidationPipe())
 	@Patch(':id')
-	update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
-		return this.recordService.update(id, updateRecordDto);
+	update(@Param('id') id: string) {
+		return this.recordService.update(id);
 	}
 }
