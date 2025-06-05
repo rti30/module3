@@ -48,7 +48,6 @@ export class RecordService {
 
 	async findAll(): Promise<RecordModel[]> {
 		return await this.recordModel.find({ time: { $exists: true, $ne: null } }).exec();
-		//	return this.recordModel.find().exec();
 	}
 
 	async findOne(id: Types.ObjectId): Promise<RecordModel | null> {

@@ -1,85 +1,152 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏆 Records API - Модуль 3. Основы backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API для управления игровыми рекордами с MongoDB
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📦 Быстрый старт
 
-## Description
+### Предварительные требования
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js 16+
+- MongoDB (локально или Docker)
+- npm или yarn
 
-## Project setup
+### Установка
 
-```bash
-$ npm install
+### 1. Запуск MongoDB
+
+#### Вариант через WSL + Docker Desktop:
+
+Пример для windows:
+
+1. Установите Docker Desktop с включенной интеграцией WSL2
+2. Создайте папку, где будут хранится данные mongo и создайте в ней docker-compose.yml со примерным содержимым:
+
+```
+version: "3.9"
+services:
+  module3.mongo:
+    image: mongo
+    restart: always
+    container_name: module3.mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: module3
+      MONGO_INITDB_ROOT_PASSWORD: module3
+    ports:
+      - 27017:27017
+
+    volumes:
+      - ./mongo-data:/data/db
+    command: --wiredTigerCacheSizeGB 1.5
+
 ```
 
-## Compile and run the project
+Примечание: опробовано на версиях 3.9 и 6. --wiredTigerCacheSizeGB 1.5 Занимаемый кэш максимально 1.5 GB. Названия сервиса/логин/пароль так же опционально.
 
-```bash
-# development
-$ npm run start
+3. В терминале WSL выполните:
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+docker-compose up -d
 ```
 
-## Run tests
 
-```bash
-# unit tests
-$ npm run test
+### 2. Настройка окружения
 
-# e2e tests
-$ npm run test:e2e
+Создайте файл .development.env на основе .example.env:
 
-# test coverage
-$ npm run test:cov
+```
+cp .example.env .development.env
 ```
 
-## Resources
+Заполните необходимые переменные окружения.
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+npm install
+npm run start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## 📡 API Endpoints
 
-## Support
+Базовый URL: http://localhost:3000/api/v1/record
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 🟢 GET /
 
-## Stay in touch
+Получить все рекорды
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Ответ:
 
-## License
+```
+[
+  {
+    "username": "string",
+    "time": "number | null",
+    "_id": "string",
+    "createdAt": "string",
+    "updatedAt": "string"
+  }
+]
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 🟠 POST /
+
+Создает или обновляет запись (Вызывать при старте/рестарте игры)
+
+```
+{
+  "_id?": "string" // опционально
+}
+```
+
+Поведение:
+Без \_id → создает новую запись
+С \_id → ищет запись и обновляет updatedAt
+Если запись не найдена → 400 Bad Request
+
+Ответ:
+
+```
+{
+  "username": "string",
+  "time": "number | null",
+  "_id": "string",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### 🔵 PATCH /:id
+
+Обновляет рекорд если он побит. (Вызывать, если игра выйграна)
+
+Параметры URL:
+
+- id - идентификатор записи
+
+Поведение:
+
+- Если id не найден → 400 Bad Request
+- Если новое время лучше (меньше) → обновляет запись
+- Если рекорд не побит → сохраняет старый результат
+
+Ответ:
+
+```
+{
+  "username": "string",
+  "time": "number",
+  "_id": "string",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "isRecord": "boolean"
+}
+```
+
+Где:
+
+time - текущее время прохождения
+isRecord - true если рекорд побит
+
+### Технологии
+
+- NestJS
+- MongoDB
+- Docker (для локальной разработки)
